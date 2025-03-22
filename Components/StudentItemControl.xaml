@@ -1,0 +1,44 @@
+﻿<UserControl x:Class="StudentGradeTracker.Components.StudentItemControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:StudentGradeTracker.Components"
+             xmlns:converters="clr-namespace:StudentGradeTracker.Converters"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+
+    <UserControl.Resources>
+        <converters:GradeToBackgroundConverter x:Key="GradeToBackgroundConverter" />
+    </UserControl.Resources>
+    
+    <Grid>
+        <Grid Background="{Binding Student.Grade,
+                            Converter={StaticResource GradeToBackgroundConverter}}">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="0.5*"/>
+                <ColumnDefinition Width="0.5*"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Text="{Binding Student.Name}" 
+               Grid.Column="0"
+               FontSize="16"
+               FontWeight="Bold" 
+               Foreground="Black"
+               Margin="10, 0, 0, 0"/>
+
+            <ComboBox Grid.Column="1"
+              ItemsSource="{Binding DataContext.GradeValues, 
+                    RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+              SelectedItem="{Binding Student.Grade, Mode=TwoWay}" />
+
+            <Button Grid.Column="2"
+            HorizontalAlignment="Stretch"
+            Content="Remove"
+            Command="{Binding RemoveStudentCommand}"
+            CommandParameter="{Binding Student}" />
+        </Grid>
+    </Grid>
+</UserControl>

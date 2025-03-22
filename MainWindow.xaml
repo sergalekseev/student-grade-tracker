@@ -3,13 +3,13 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:StudentGradeTracker" 
-        xmlns:converters="clr-namespace:StudentGradeTracker.Converters"
+        xmlns:local="clr-namespace:StudentGradeTracker"
+        xmlns:components="clr-namespace:StudentGradeTracker.Components"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
 
     <Window.Resources>
-        <converters:GradeToBackgroundConverter x:Key="GradeToBackgroundConverter" />
+        
     </Window.Resources>
 
     <Grid x:Name="MainGrid">
@@ -46,34 +46,10 @@
                  ItemsSource="{Binding Students}" >
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <Grid Background="{Binding Grade,
-                        Converter={StaticResource GradeToBackgroundConverter}}">
-
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="2*"/>
-                            <ColumnDefinition Width="0.5*"/>
-                            <ColumnDefinition Width="0.5*"/>
-                        </Grid.ColumnDefinitions>
-                        
-                        <TextBlock Text="{Binding Name}" 
-                                   Grid.Column="0"
-                                   FontSize="16"
-                                   FontWeight="Bold" 
-                                   Foreground="Black"
-                                   Margin="10, 0, 0, 0"/>
-                        
-                        <ComboBox Grid.Column="1"
-                                  ItemsSource="{Binding DataContext.GradeValues, 
-                                        RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                  SelectedItem="{Binding Grade, Mode=TwoWay}" />
-                        
-                        <Button Grid.Column="2"
-                                HorizontalAlignment="Stretch"
-                                Content="Remove"
-                                Command="{Binding Path=DataContext.RemoveStudent, 
-                                    RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                CommandParameter="{Binding}" />
-                    </Grid>
+                    <components:StudentItemControl 
+                        Student="{Binding}" 
+                        RemoveStudentCommand="{Binding DataContext.RemoveStudentCommand,
+                                                RelativeSource={RelativeSource AncestorType=ItemsControl}}" />
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
