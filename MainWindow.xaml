@@ -1,0 +1,83 @@
+﻿<Window x:Class="StudentGradeTracker.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:StudentGradeTracker" 
+        xmlns:converters="clr-namespace:StudentGradeTracker.Converters"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+
+    <Window.Resources>
+        <converters:GradeToBackgroundConverter x:Key="GradeToBackgroundConverter" />
+    </Window.Resources>
+
+    <Grid x:Name="MainGrid">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="0.5*" />
+            <ColumnDefinition Width="0.5*" />
+        </Grid.ColumnDefinitions>
+
+        <TextBox Grid.Row="0" 
+                 Grid.Column="0" 
+                 Text="{Binding NewStudent.Name, Mode=TwoWay}"/>
+
+        <ComboBox Grid.Row="0"
+                  Grid.Column="1"
+                  ItemsSource="{Binding GradeValues}" 
+                  SelectedIndex="2" 
+                  SelectedItem="{Binding NewStudent.Grade, Mode=TwoWay}" />
+
+        <Button Grid.Row="0"
+                Grid.Column="3"
+                Content="Add Student"
+                Command="{Binding AddStudent}"/>
+
+        <ItemsControl Grid.Row="1" 
+                 Grid.Column="0" 
+                 Grid.ColumnSpan="4"
+                 ItemsSource="{Binding Students}" >
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Grid Background="{Binding Grade,
+                        Converter={StaticResource GradeToBackgroundConverter}}">
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="2*"/>
+                            <ColumnDefinition Width="0.5*"/>
+                            <ColumnDefinition Width="0.5*"/>
+                        </Grid.ColumnDefinitions>
+                        
+                        <TextBlock Text="{Binding Name}" 
+                                   Grid.Column="0"
+                                   FontSize="16"
+                                   FontWeight="Bold" 
+                                   Foreground="Black"
+                                   Margin="10, 0, 0, 0"/>
+                        
+                        <ComboBox Grid.Column="1"
+                                  ItemsSource="{Binding DataContext.GradeValues, 
+                                        RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                  SelectedItem="{Binding Grade, Mode=TwoWay}" />
+                        
+                        <Button Grid.Column="2"
+                                HorizontalAlignment="Stretch"
+                                Content="Remove"
+                                Command="{Binding Path=DataContext.RemoveStudent, 
+                                    RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                CommandParameter="{Binding}" />
+                    </Grid>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+    </Grid>
+    
+</Window>
