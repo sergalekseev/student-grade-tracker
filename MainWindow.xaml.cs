@@ -12,11 +12,10 @@ namespace StudentGradeTracker
     {
         private MainWindowViewModel _viewModel;
 
-        public MainWindow()
+        public MainWindow(MainWindowViewModel viewModel)
         {
             InitializeComponent();
-            DataContext = _viewModel = 
-                new MainWindowViewModel();
+            DataContext = _viewModel = viewModel;
         }
     }
 }

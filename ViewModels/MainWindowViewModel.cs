@@ -1,25 +1,22 @@
 ﻿using StudentGradeTracker.Models;
+using StudentGradeTracker.Services;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 
 namespace StudentGradeTracker.ViewModels
 {
-    internal class MainWindowViewModel : BaseViewModel
+    public class MainWindowViewModel : BaseViewModel
     {
         private Student _newStudent;
         private ObservableCollection<Student> _students;
+        private IStudentsStore _studentsStore;
 
-        public MainWindowViewModel()
+        public MainWindowViewModel(IStudentsStore studentsStore)
         {
+            _studentsStore = studentsStore;
             _newStudent = new();
-            _students = new()
-            {
-                new Student { Name = "Student 1", Grade = Grade.Excellent },
-                new Student { Name = "Student 3", Grade = Grade.Poor },
-                new Student { Name = "Student 4", Grade = Grade.Fail },
-                new Student { Name = "Student 5", Grade = Grade.Good },
-                new Student { Name = "Student 10", Grade = Grade.Fail },
-            };
+            _students = new(studentsStore.Students);
+           
             GradeValues = Enum.GetValues(typeof(Grade));
             AddStudent = new RelayCommand<Student>(OnAddStudent);
             RemoveStudent = new RelayCommand<Student>(OnRemoveStudent);
@@ -45,12 +42,14 @@ namespace StudentGradeTracker.ViewModels
 
         private void OnAddStudent(Student _)
         {
+            _studentsStore.AddStudent(NewStudent);
             Students.Add(NewStudent);
             NewStudent = new Student();
         }
 
         private void OnRemoveStudent(Student studentToRemove)
         {
+            _studentsStore.RemoveStudent(studentToRemove);
             Students.Remove(studentToRemove);
         }
 
