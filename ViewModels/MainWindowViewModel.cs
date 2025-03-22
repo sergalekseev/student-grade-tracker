@@ -15,12 +15,10 @@ namespace StudentGradeTracker.ViewModels
             _students = new()
             {
                 new Student { Name = "Student 1", Grade = Grade.Excellent },
-                new Student { Name = "Student 2", Grade = Grade.Excellent },
                 new Student { Name = "Student 3", Grade = Grade.Poor },
                 new Student { Name = "Student 4", Grade = Grade.Fail },
                 new Student { Name = "Student 5", Grade = Grade.Good },
-                new Student { Name = "Student 6", Grade = Grade.Good },
-                new Student { Name = "Student 7", Grade = Grade.Poor }
+                new Student { Name = "Student 10", Grade = Grade.Fail },
             };
             GradeValues = Enum.GetValues(typeof(Grade));
             AddStudent = new RelayCommand<Student>(OnAddStudent);
