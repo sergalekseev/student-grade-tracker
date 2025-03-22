@@ -1,6 +1,6 @@
 ﻿namespace StudentGradeTracker.Models
 {
-    enum Grade
+    public enum Grade
     {
         Fail,
         Poor,
@@ -8,7 +8,7 @@
         Excellent
     }
 
-    internal class Student
+    public class Student
     {
         public string Name { get; set; }
         public Grade Grade { get; set; }
