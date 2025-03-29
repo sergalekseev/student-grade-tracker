@@ -68,4 +68,47 @@ public class StudentsController : ControllerBase
             Grade = resultStudent.Grade
         };
     }
+
+    [HttpPut]
+    public async Task<ActionResult<GetStudentResponse>> ChangeStudent(ChangeStudentRequest studentToChange)
+    {
+        await Task.Delay(500);
+
+        var student = _studentsStore.Students.FirstOrDefault(x => x.Id.Equals(studentToChange.Id));
+
+        if (student is null)
+        {
+            return NotFound("Entity with specified id not found");
+        }
+
+        student.Grade = studentToChange.Grade;
+
+        return new GetStudentResponse()
+        {
+            Name = student.Name,
+            Grade = student.Grade
+        };
+    }
+
+    [HttpPut("{id}")]
+    public async Task<ActionResult<GetStudentResponse>> ChangeStudent(int id, 
+        [FromBody]BaseChangeStudentRequest studentToChange)
+    {
+        await Task.Delay(500);
+
+        var student = _studentsStore.Students.FirstOrDefault(x => x.Id.Equals(id));
+
+        if (student is null)
+        {
+            return NotFound("Entity with specified id not found");
+        }
+
+        student.Grade = studentToChange.Grade;
+
+        return new GetStudentResponse()
+        {
+            Name = student.Name,
+            Grade = student.Grade
+        };
+    }
 }
