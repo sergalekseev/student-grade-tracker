@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StudentGradeTracker", "Stud
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StudentGradeTrackerServer", "StudentGradeTrackerServer\StudentGradeTrackerServer.csproj", "{84B12660-451E-456A-BE40-330901187B2F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StudentGradeTracker.Infra", "StudentGradeTracker.Infra\StudentGradeTracker.Infra.csproj", "{B4A3FC81-F2C5-47C3-8F98-914000ABB850}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{84B12660-451E-456A-BE40-330901187B2F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{84B12660-451E-456A-BE40-330901187B2F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{84B12660-451E-456A-BE40-330901187B2F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B4A3FC81-F2C5-47C3-8F98-914000ABB850}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B4A3FC81-F2C5-47C3-8F98-914000ABB850}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B4A3FC81-F2C5-47C3-8F98-914000ABB850}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B4A3FC81-F2C5-47C3-8F98-914000ABB850}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

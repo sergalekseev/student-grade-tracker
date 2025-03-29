@@ -1,4 +1,4 @@
-﻿using StudentGradeTracker.Models;
+﻿using StudentGradeTracker.Infra.Models;
 using System.Globalization;
 using System.Windows.Data;
 using System.Windows.Media;

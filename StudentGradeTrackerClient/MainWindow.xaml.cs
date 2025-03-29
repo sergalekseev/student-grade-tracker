@@ -1,4 +1,4 @@
-﻿using StudentGradeTracker.Models;
+﻿using StudentGradeTracker.Infra.Models;
 using StudentGradeTracker.ViewModels;
 using System.Windows;
 using System.Windows.Controls;

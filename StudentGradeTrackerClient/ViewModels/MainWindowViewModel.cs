@@ -1,5 +1,5 @@
-﻿using StudentGradeTracker.Models;
-using StudentGradeTracker.Services;
+﻿using StudentGradeTracker.Infra.Models;
+using StudentGradeTracker.Infra.Services;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 

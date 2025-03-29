@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using StudentGradeTracker.Services;
+using StudentGradeTracker.Infra.Services;
 using StudentGradeTracker.ViewModels;
 using System.Configuration;
 using System.Data;
