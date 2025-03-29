@@ -46,9 +46,9 @@
                  ItemsSource="{Binding Students}" >
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <components:StudentItemControl 
+                    <components:StudentItemControl
                         Student="{Binding}" 
-                        RemoveStudentCommand="{Binding DataContext.RemoveStudentCommand,
+                        RemoveStudentCommand="{Binding DataContext.RemoveStudent,
                                                 RelativeSource={RelativeSource AncestorType=ItemsControl}}" />
                 </DataTemplate>
             </ItemsControl.ItemTemplate>

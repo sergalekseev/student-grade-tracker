@@ -6,13 +6,14 @@
              xmlns:local="clr-namespace:StudentGradeTracker.Components"
              xmlns:converters="clr-namespace:StudentGradeTracker.Converters"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="450" d:DesignWidth="800"
+             x:Name="Root">
 
     <UserControl.Resources>
         <converters:GradeToBackgroundConverter x:Key="GradeToBackgroundConverter" />
     </UserControl.Resources>
     
-    <Grid>
+    <Grid DataContext="{Binding ElementName=Root}">
         <Grid Background="{Binding Student.Grade,
                             Converter={StaticResource GradeToBackgroundConverter}}">
 
@@ -29,16 +30,18 @@
                Foreground="Black"
                Margin="10, 0, 0, 0"/>
 
+            <!-- TODO: Change binding -->
             <ComboBox Grid.Column="1"
               ItemsSource="{Binding DataContext.GradeValues, 
                     RelativeSource={RelativeSource AncestorType=ItemsControl}}"
               SelectedItem="{Binding Student.Grade, Mode=TwoWay}" />
 
+            <!-- TODO: get command from DI -->
             <Button Grid.Column="2"
-            HorizontalAlignment="Stretch"
-            Content="Remove"
-            Command="{Binding RemoveStudentCommand}"
-            CommandParameter="{Binding Student}" />
+                HorizontalAlignment="Stretch"
+                Content="Remove"
+                Command="{Binding RemoveStudentCommand}"
+                CommandParameter="{Binding Student}" />
         </Grid>
     </Grid>
 </UserControl>

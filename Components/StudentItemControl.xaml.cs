@@ -12,29 +12,22 @@ namespace StudentGradeTracker.Components
     {
         public static readonly DependencyProperty StudentProperty =
             DependencyProperty.Register(
-                nameof(Student), 
-                typeof(Student), 
-                typeof(StudentItemControl));
+                nameof(Student),
+                typeof(Student),
+                typeof(StudentItemControl),
+                new PropertyMetadata(null, HandlePropertyChanged));
 
         public static readonly DependencyProperty RemoveStudentCommandProperty =
             DependencyProperty.Register(
                 nameof(RemoveStudentCommand), 
                 typeof(ICommand), 
-                typeof(StudentItemControl));
+                typeof(StudentItemControl),
+                new PropertyMetadata(null, HandlePropertyChanged));
 
         public StudentItemControl()
         {
             InitializeComponent();
-            DataContextChanged += StudentItemControlDataContextChanged;
-        }
-
-        private void StudentItemControlDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
-        {
-            var t = DataContext;
-            if (DataContext is Student)
-            {
-                //DataContext = this;
-            }
+            // DataContext = this; <-- It's bad practice
         }
 
         public Student Student
@@ -47,6 +40,12 @@ namespace StudentGradeTracker.Components
         {
             get => (ICommand)GetValue(RemoveStudentCommandProperty);
             set => SetValue(RemoveStudentCommandProperty, value);
+        }
+
+        protected static void HandlePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            Console.WriteLine($"{nameof(StudentItemControl)}.{nameof(HandlePropertyChanged)} - " +
+                $"property {e.Property.Name} was changed, old value: {e.OldValue}, new value {e.NewValue}");
         }
     }
 }
