@@ -2,8 +2,9 @@
 
 namespace StudentGradeTracker.Infra.DataContracts;
 
-public class AddStudentRequest
+public class StudentDto
 {
+    public string IdCard { get; set; }
     public string Name { get; set; }
     public Grade Grade { get; set; }
 }

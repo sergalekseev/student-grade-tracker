@@ -1,6 +1,6 @@
-﻿using StudentGradeTracker.Infra.Models;
+﻿using StudentGradeTrackerServer.Models;
 
-namespace StudentGradeTracker.Infra.Services
+namespace StudentGradeTrackerServer.Services
 {
     public interface IStudentsStore
     {

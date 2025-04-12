@@ -1,16 +1,11 @@
-﻿namespace StudentGradeTracker.Infra.Models;
+﻿using StudentGradeTracker.Infra.Models;
 
-public enum Grade
-{
-    Fail,
-    Poor,
-    Good,
-    Excellent
-}
+namespace StudentGradeTrackerServer.Models;
 
 public class Student
 {
     public int Id { get; set; }
+    public string IdCard { get; set; }
     public string Name { get; set; }
     public Grade Grade { get; set; }
 }

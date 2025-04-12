@@ -1,4 +1,4 @@
-using StudentGradeTracker.Infra.Services;
+using StudentGradeTrackerServer.Services;
 
 namespace StudentGradeTrackerServer
 {
