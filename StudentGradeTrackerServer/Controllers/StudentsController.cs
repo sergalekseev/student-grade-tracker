@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using StudentGradeTracker.Infra.DataContracts;
+using StudentGradeTracker.Infra.Models;
 using StudentGradeTrackerServer.Models;
 using StudentGradeTrackerServer.Services;
 
@@ -10,10 +11,15 @@ namespace StudentGradeTrackerServer.Controllers;
 public class StudentsController : ControllerBase
 {
     private readonly IStudentsStore _studentsStore;
+    private readonly IGradesStore _gradesStore;
+    private readonly ISubjectsStore _subjectsStore;
 
-    public StudentsController(IStudentsStore studentsStore)
+    public StudentsController(IStudentsStore studentsStore,
+        IGradesStore gradesStore, ISubjectsStore subjectsStore)
     {
         _studentsStore = studentsStore;
+        _gradesStore = gradesStore;
+        _subjectsStore = subjectsStore;
     }
 
     [HttpGet]
@@ -70,5 +76,124 @@ public class StudentsController : ControllerBase
         student.Name = studentToUpdate.Name;
 
         return student.ToDto();
+    }
+
+    [HttpGet("{idCard}/grades")]
+    public async Task<ActionResult> GetGrades(string idCard)
+    {
+        await Task.Delay(500);
+
+        var student = _studentsStore.Students
+            .FirstOrDefault(x => x.IdCard.Equals(idCard));
+
+        if (student is null)
+        {
+            return NotFound("Entity with specified id not found");
+        }
+
+        var subjectGrades = _gradesStore.Grades
+            .Where(x => x.StudentId.Equals(student.Id))
+            .Select(x => new
+            {
+                Subject = _subjectsStore.Subjects.FirstOrDefault()?.ToDto(),
+                Grade = x.ToDto()
+            })
+            .ToList();
+
+        return Ok(new
+        {
+            Student = student.ToDto(),
+            Grades = subjectGrades
+        });
+
+    }
+
+    [HttpPost("{idCard}/grades")]
+    public async Task<ActionResult> CreateGrade(string idCard,
+        [FromBody]GradeCreateDto grade)
+    {
+        await Task.Delay(500);
+
+        var student = _studentsStore.Students
+            .FirstOrDefault(x => x.IdCard.Equals(idCard));
+
+        if (student is null)
+        {
+            return NotFound("Entity with specified id not found");
+        }
+
+        var subject = _subjectsStore.Subjects
+            .FirstOrDefault(x => x.Id.Equals(grade.SubjectId));
+
+        if (subject is null)
+        {
+            return NotFound("Entity with specified id not found");
+        }
+
+        // autoincrement
+        var lastId = _gradesStore.Grades.Max(x => x.Id);
+        var newGradeId = lastId + 1;
+
+        var resultGrade = _gradesStore.AddGrade(new StudentSubjectGrade()
+        {
+            Id = newGradeId,
+            StudentId = student.Id,
+            SubjectId = subject.Id,
+            Timestamp = DateTime.Now,
+            Grade = grade.Grade,
+        });
+
+        return Ok(new
+        {
+            Student = student.ToDto(),
+            Subject = subject.ToDto(),
+            Grade = resultGrade.ToDto()
+        });
+    }
+
+    [HttpPut("{idCard}/subjects/{subjectId}")]
+    public async Task<ActionResult> AssignSubject(string idCard, int subjectId)
+    {
+        await Task.Delay(500);
+
+        var student = _studentsStore.Students
+            .FirstOrDefault(x => x.IdCard.Equals(idCard));
+
+        if (student is null)
+        {
+            return NotFound("Entity with specified id not found");
+        }
+        var subject = _subjectsStore.Subjects
+            .FirstOrDefault(x => x.Id.Equals(subjectId));
+
+        if (subject is null)
+        {
+            return NotFound("Entity with specified id not found");
+        }
+
+        var studentSubject = _subjectsStore.StudentSubjects
+            .FirstOrDefault(x =>
+                x.StudentId.Equals(student.Id) &&
+                x.SubjectId.Equals(subject.Id));
+
+        if (studentSubject is null)
+        {
+            // autoincrement
+            var lastId = _subjectsStore.StudentSubjects.Max(x => x.Id);
+            var newId = lastId + 1;
+
+            studentSubject = _subjectsStore.AddStudentSubject(new()
+            {
+                Id = newId,
+                StudentId = student.Id,
+                SubjectId = subject.Id
+            });
+        }
+
+        return Ok(new
+        {
+            Student = student.ToDto(),
+            Subject = subject.ToDto()
+        });
     }
 }

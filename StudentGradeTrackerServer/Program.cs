@@ -10,6 +10,8 @@ namespace StudentGradeTrackerServer
 
             // Configure Services
             builder.Services.AddSingleton<IStudentsStore, StudentsStore>();
+            builder.Services.AddSingleton<ISubjectsStore, SubjectsStore>();
+            builder.Services.AddSingleton<IGradesStore, GradesStore>();
 
             // Add services to the container.
             builder.Services.AddControllers();
