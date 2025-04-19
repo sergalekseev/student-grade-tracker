@@ -1,4 +1,5 @@
-﻿using StudentGradeTracker.Infra.Models;
+﻿using StudentGradeTracker.Infra.DataContracts;
+using StudentGradeTracker.Infra.Models;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -13,7 +14,7 @@ namespace StudentGradeTracker.Components
         public static readonly DependencyProperty StudentProperty =
             DependencyProperty.Register(
                 nameof(Student),
-                typeof(Student),
+                typeof(StudentDto),
                 typeof(StudentItemControl),
                 new PropertyMetadata(null, HandlePropertyChanged));
 
@@ -30,9 +31,9 @@ namespace StudentGradeTracker.Components
             // DataContext = this; <-- It's bad practice
         }
 
-        public Student Student
+        public StudentDto Student
         {
-            get => (Student)GetValue(StudentProperty);
+            get => (StudentDto)GetValue(StudentProperty);
             set => SetValue(StudentProperty, value);
         }
 

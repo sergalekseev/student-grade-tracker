@@ -25,7 +25,11 @@ public class GradesStore : IGradesStore
                     StudentId = studentSubject.StudentId,
                     SubjectId = studentSubject.SubjectId,
                     Timestamp = DateTime.Now,
-                    Grade = (Grade)rand.Next(minGrade, maxGrade)
+                    Grade = (Grade)rand.Next(minGrade, maxGrade),
+                    
+                    // refs
+                    Student = studentSubject.Student,
+                    Subject = studentSubject.Subject,
                 });
             }
         }

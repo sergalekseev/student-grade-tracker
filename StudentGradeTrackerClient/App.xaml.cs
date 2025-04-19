@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using StudentGradeTracker.Infra.Services;
+using StudentGradeTracker.Services;
 using StudentGradeTracker.ViewModels;
 using System.Configuration;
 using System.Data;
@@ -22,7 +22,7 @@ namespace StudentGradeTracker
             builder.ConfigureServices((hostContext, services) =>
             {
                 // services
-                services.AddSingleton<IStudentsStore, StudentsStore>();
+                services.AddSingleton<IServerApi, ServerApi>();
 
                 // view models
                 services.AddTransient<MainWindowViewModel>();

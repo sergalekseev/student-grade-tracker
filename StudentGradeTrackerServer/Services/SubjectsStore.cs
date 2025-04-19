@@ -29,7 +29,11 @@ public class SubjectsStore : ISubjectsStore
                 {
                     Id = lastStudentSubjectId++,
                     StudentId = student.Id,
-                    SubjectId = i
+                    SubjectId = i,
+
+                    // refs
+                    Student = student,
+                    Subject = Subjects.First(s => s.Id.Equals(i))
                 });
             }
         }

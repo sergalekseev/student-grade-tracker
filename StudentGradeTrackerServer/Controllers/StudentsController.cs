@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using StudentGradeTracker.Infra.DataContracts;
-using StudentGradeTracker.Infra.Models;
 using StudentGradeTrackerServer.Models;
 using StudentGradeTrackerServer.Services;
 
@@ -46,6 +45,11 @@ public class StudentsController : ControllerBase
     public async Task<ActionResult<StudentDto>> CreateStudent(StudentCreateDto newStudent)
     {
         await Task.Delay(500);
+
+        if (_studentsStore.Students.Any(x => x.IdCard.Equals(newStudent.IdCard)))
+        {
+            return Conflict($"Student with id card {newStudent.IdCard} already exists");
+        }
 
         // autoincrement
         var lastId = _studentsStore.Students.Max(x => x.Id);
@@ -93,14 +97,14 @@ public class StudentsController : ControllerBase
 
         var subjectGrades = _gradesStore.Grades
             .Where(x => x.StudentId.Equals(student.Id))
-            .Select(x => new
+            .Select(x => new SubjectGradeDto()
             {
-                Subject = _subjectsStore.Subjects.FirstOrDefault()?.ToDto(),
+                Subject = x.Subject.ToDto(),
                 Grade = x.ToDto()
             })
             .ToList();
 
-        return Ok(new
+        return Ok(new StudentGradesDto()
         {
             Student = student.ToDto(),
             Grades = subjectGrades

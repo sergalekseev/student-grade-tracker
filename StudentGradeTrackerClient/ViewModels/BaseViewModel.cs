@@ -24,5 +24,15 @@ namespace StudentGradeTracker.ViewModels
             var args = new PropertyChangedEventArgs(propertyName);
             PropertyChanged?.Invoke(this, args);
         }
+
+        public virtual Task OnAppearing()
+        {
+            return Task.CompletedTask;
+        }
+
+        public virtual Task OnDisappearing()
+        {
+            return Task.CompletedTask;
+        }
     }
 }
