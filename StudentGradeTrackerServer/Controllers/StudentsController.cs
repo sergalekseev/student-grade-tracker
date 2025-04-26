@@ -41,6 +41,23 @@ public class StudentsController : ControllerBase
             ?.ToDto();
     }
 
+    [HttpDelete("{idCard}")]
+    public async Task<ActionResult<StudentDto>> DeleteStudent(string idCard)
+    {
+        await Task.Delay(500);
+
+        var student = _studentsStore.Students
+            .FirstOrDefault(x => x.IdCard.Equals(idCard));
+
+        if (student is null)
+        {
+            return NotFound("Entity with specified id not found");
+        }
+
+        _studentsStore.Students.Remove(student);
+        return student.ToDto();
+    }
+
     [HttpPost]
     public async Task<ActionResult<StudentDto>> CreateStudent(StudentCreateDto newStudent)
     {

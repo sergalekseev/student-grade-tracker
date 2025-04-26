@@ -1,5 +1,4 @@
 ﻿using StudentGradeTracker.Infra.DataContracts;
-using StudentGradeTracker.Infra.Models;
 using StudentGradeTracker.Services;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
@@ -8,31 +7,26 @@ namespace StudentGradeTracker.ViewModels
 {
     public class MainWindowViewModel : BaseViewModel
     {
-        //private Student _newStudent;
+        private StudentCreateDto _newStudent;
         private ObservableCollection<StudentDto> _students;
-        //private IStudentsStore _studentsStore;
         private readonly IServerApi _serverApi;
 
         public MainWindowViewModel(IServerApi serverApi)
         {
             _serverApi = serverApi;
+            _newStudent = new();
 
-            //_studentsStore = studentsStore;
-            //_newStudent = new();
-            //_students = new(studentsStore.Students);
-
-            //GradeValues = Enum.GetValues(typeof(Grade));
-            //AddStudent = new RelayCommand<Student>(OnAddStudent);
-            //RemoveStudent = new RelayCommand<Student>(OnRemoveStudent);
+            AddStudent = new RelayCommand<StudentDto>(OnAddStudent);
+            RemoveStudent = new RelayCommand<StudentDto>(OnRemoveStudent);
         }
 
         public Array GradeValues { get; }
 
-        //public Student NewStudent
-        //{
-        //    get => _newStudent;
-        //    set => SetProperty(ref _newStudent, value);
-        //}
+        public StudentCreateDto NewStudent
+        {
+            get => _newStudent;
+            set => SetProperty(ref _newStudent, value);
+        }
 
         public ObservableCollection<StudentDto> Students
         {
@@ -52,18 +46,37 @@ namespace StudentGradeTracker.ViewModels
             Students = [.. students];
         }
 
-        //private void OnAddStudent(Student _)
-        //{
-        //    _studentsStore.AddStudent(NewStudent);
-        //    Students.Add(NewStudent);
-        //    NewStudent = new Student();
-        //}
+        private async void OnAddStudent(StudentDto _)
+        {
+            try
+            {
+                var newStudent = await _serverApi.CreateStudentAsync(NewStudent);
 
-        //private void OnRemoveStudent(Student studentToRemove)
-        //{
-        //    _studentsStore.RemoveStudent(studentToRemove);
-        //    Students.Remove(studentToRemove);
-        //}
+                if (newStudent is not null)
+                {
+                    Students.Add(newStudent);
+                }
+            }
+            catch { }
+            finally
+            {
+                NewStudent = new();
+            }
+        }
+
+        private async void OnRemoveStudent(StudentDto studentToRemove)
+        {
+            try
+            {
+                var newStudent = await _serverApi.RemoveStudentAsync(studentToRemove.IdCard);
+
+                if (newStudent is not null)
+                {
+                    Students.Remove(studentToRemove);
+                }
+            }
+            catch { }
+        }
 
     }
 }

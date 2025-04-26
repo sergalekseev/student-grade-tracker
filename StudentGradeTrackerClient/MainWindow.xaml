@@ -26,14 +26,12 @@
         </Grid.ColumnDefinitions>
 
         <TextBox Grid.Row="0" 
-                 Grid.Column="0" 
-                 Text="{Binding NewStudent.Name, Mode=TwoWay}"/>
+            Grid.Column="0" 
+            Text="{Binding NewStudent.IdCard, Mode=TwoWay}"/>
 
-        <ComboBox Grid.Row="0"
-                  Grid.Column="1"
-                  ItemsSource="{Binding GradeValues}" 
-                  SelectedIndex="2" 
-                  SelectedItem="{Binding NewStudent.Grade, Mode=TwoWay}" />
+        <TextBox Grid.Row="0"
+                 Grid.Column="1"
+                 Text="{Binding NewStudent.Name, Mode=TwoWay}"/>
 
         <Button Grid.Row="0"
                 Grid.Column="3"

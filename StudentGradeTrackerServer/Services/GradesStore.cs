@@ -5,7 +5,7 @@ namespace StudentGradeTrackerServer.Services;
 
 public class GradesStore : IGradesStore
 {
-    public GradesStore(ISubjectsStore subjectsStore)
+    public GradesStore(ISubjectsStore subjectsStore, IStudentsStore studentsStore)
     {
         Grades = new();
         var rand = new Random();
@@ -15,7 +15,7 @@ public class GradesStore : IGradesStore
         foreach (var studentSubject in subjectsStore.StudentSubjects)
         {
             var iterations = rand.Next(2, 5);
-            var minGrade = rand.Next(0, Math.Max(0, maxGrade - 2));
+            var minGrade = rand.Next(1, maxGrade);
 
             for (var i = 1; i <= iterations; i++)
             {
@@ -33,6 +33,16 @@ public class GradesStore : IGradesStore
                 });
             }
         }
+
+        // calcuate grades
+        foreach (var student in studentsStore.Students)
+        {
+            double averageGradeValue = Grades
+                .Where(x => x.StudentId.Equals(student.Id))
+                .Average(x => (int)x.Grade);
+
+            student.Grade = GetAverageGrade(averageGradeValue);
+        }
     }
 
     public List<StudentSubjectGrade> Grades { get; private set; }
@@ -48,4 +58,12 @@ public class GradesStore : IGradesStore
         Grades.Remove(studentSubjectGrade);
         return studentSubjectGrade;
     }
+
+    private static Grade GetAverageGrade(double average) => average switch
+    {
+        < 1.0 => Grade.Fail,
+        < 2.0 => Grade.Poor,
+        < 3.0 => Grade.Good,
+        _ => Grade.Excellent
+    };
 }
