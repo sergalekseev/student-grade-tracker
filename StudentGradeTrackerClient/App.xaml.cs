@@ -26,6 +26,7 @@ namespace StudentGradeTracker
 
                 // view models
                 services.AddTransient<MainWindowViewModel>();
+                services.AddTransient<StudentDetailsViewModel>();
 
                 // views
                 services.AddSingleton<MainWindow>();

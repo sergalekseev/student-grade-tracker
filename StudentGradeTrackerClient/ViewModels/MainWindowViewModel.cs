@@ -68,12 +68,17 @@ namespace StudentGradeTracker.ViewModels
         {
             try
             {
-                var newStudent = await _serverApi.RemoveStudentAsync(studentToRemove.IdCard);
+                // TODO: move to the separate command handler
+                StudentDetails detailsWindow = new StudentDetails(studentToRemove);
+                detailsWindow.Show();
+
+                /* var newStudent = await _serverApi.RemoveStudentAsync(studentToRemove.IdCard);
 
                 if (newStudent is not null)
                 {
                     Students.Remove(studentToRemove);
                 }
+                */
             }
             catch { }
         }
