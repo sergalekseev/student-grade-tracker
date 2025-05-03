@@ -18,8 +18,8 @@ namespace StudentGradeTracker
             DataContext = _viewModel = 
                 App.AppHost.Services.GetService<StudentDetailsViewModel>();
 
-            // 1. pass student object to view model
-            // 2. run the initialization (call API)
+            _viewModel.Student = student;
+            _ = _viewModel.InitializeAsync();
         }
     }
 }

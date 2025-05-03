@@ -1,7 +1,6 @@
 ﻿
 using StudentGradeTracker.Infra.DataContracts;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
@@ -74,6 +73,25 @@ internal class ServerApi : IServerApi
 
         var data = await response.Content
             .ReadFromJsonAsync<StudentDto>();
+
+        return data;
+    }
+
+    public async Task<StudentGradesDto> GetGradesAsync(string idCard)
+    {
+        // GET + "/api/students/{idCard}/grades"
+        using var client = new HttpClient();
+        client.BaseAddress = _address;
+
+        var response = await client.GetAsync($"students/{idCard}/grades");
+
+        if (!response.IsSuccessStatusCode)
+        {
+            return null;
+        }
+
+        var data = await response.Content
+            .ReadFromJsonAsync<StudentGradesDto>();
 
         return data;
     }

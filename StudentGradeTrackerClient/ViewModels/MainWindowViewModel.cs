@@ -18,6 +18,7 @@ namespace StudentGradeTracker.ViewModels
 
             AddStudent = new RelayCommand<StudentDto>(OnAddStudent);
             RemoveStudent = new RelayCommand<StudentDto>(OnRemoveStudent);
+            OpenStudentDetails = new RelayCommand<StudentDto>(OnOpenStudentDetails);
         }
 
         public Array GradeValues { get; }
@@ -37,6 +38,8 @@ namespace StudentGradeTracker.ViewModels
         public ICommand AddStudent { get; }
 
         public ICommand RemoveStudent { get; set; }
+
+        public ICommand OpenStudentDetails { get; set; }
 
         public override async Task OnAppearing()
         {
@@ -68,19 +71,21 @@ namespace StudentGradeTracker.ViewModels
         {
             try
             {
-                // TODO: move to the separate command handler
-                StudentDetails detailsWindow = new StudentDetails(studentToRemove);
-                detailsWindow.Show();
-
-                /* var newStudent = await _serverApi.RemoveStudentAsync(studentToRemove.IdCard);
+                var newStudent = await _serverApi.RemoveStudentAsync(studentToRemove.IdCard);
 
                 if (newStudent is not null)
                 {
                     Students.Remove(studentToRemove);
                 }
-                */
+                
             }
             catch { }
+        }
+
+        private void OnOpenStudentDetails(StudentDto student)
+        {
+            StudentDetails detailsWindow = new StudentDetails(student);
+            detailsWindow.Show();
         }
 
     }

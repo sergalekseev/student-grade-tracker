@@ -41,13 +41,23 @@
         <ItemsControl Grid.Row="1" 
                  Grid.Column="0" 
                  Grid.ColumnSpan="4"
-                 ItemsSource="{Binding Students}" >
+                 ItemsSource="{Binding Students}">
+
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <components:StudentItemControl
-                        Student="{Binding}" 
-                        RemoveStudentCommand="{Binding DataContext.RemoveStudent,
-                                                RelativeSource={RelativeSource AncestorType=ItemsControl}}" />
+                    <Button Command="{Binding DataContext.OpenStudentDetails, 
+                                RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                            CommandParameter="{Binding}">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <components:StudentItemControl
+                                    Student="{Binding}" 
+                                    RemoveStudentCommand="{Binding DataContext.RemoveStudent,
+                                        RelativeSource={RelativeSource AncestorType=ItemsControl}}" 
+                                    />
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>

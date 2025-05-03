@@ -4,9 +4,86 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:StudentGradeTracker"
+        xmlns:models="clr-namespace:StudentGradeTracker.Models"
+        xmlns:dto="clr-namespace:StudentGradeTracker.Infra.DataContracts;assembly=StudentGradeTracker.Infra" xmlns:sys="clr-namespace:System;assembly=netstandard"
         mc:Ignorable="d"
         Title="StudentDetails" Height="450" Width="800">
+
+    <Window.Resources>
+        <x:Array x:Key="SampleStudentSubjects" Type="models:SubjectGrades">
+            <models:SubjectGrades SubjectName="Subject 1">
+                <models:SubjectGrades.Grades>
+                    <dto:GradeDto>
+                        <dto:GradeDto.Timestamp>
+                            <sys:DateTime>2025-01-15T00:00:00</sys:DateTime>
+                        </dto:GradeDto.Timestamp>
+                        <dto:GradeDto.Grade>Good</dto:GradeDto.Grade>
+                    </dto:GradeDto>
+                    <dto:GradeDto>
+                        <dto:GradeDto.Timestamp>
+                            <sys:DateTime>2025-01-15T00:00:00</sys:DateTime>
+                        </dto:GradeDto.Timestamp>
+                        <dto:GradeDto.Grade>Excellent</dto:GradeDto.Grade>
+                    </dto:GradeDto>
+                </models:SubjectGrades.Grades>
+            </models:SubjectGrades>
+            <models:SubjectGrades SubjectName="Subject 2" />
+            <models:SubjectGrades SubjectName="Subject 3" />
+        </x:Array>
+    </Window.Resources>
+
     <Grid>
-        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Orientation="Horizontal"                  
+                   VerticalAlignment="Bottom"
+                   Margin="15">
+            <TextBlock Text="{Binding Student.IdCard}"
+                       d:Text="A0001"
+                       FontWeight="Bold"/>
+            <TextBlock Text=":"
+                       FontWeight="Bold"
+                       Margin="0, 0, 5, 0"/>
+            <TextBlock Text="{Binding Student.Name}"
+                       d:Text="Some student name"
+                       FontWeight="Bold"/>
+        </StackPanel>
+
+        <ScrollViewer VerticalScrollBarVisibility="Auto"
+                      Grid.Row="1"
+                      Margin="15, 0">
+            <ItemsControl d:ItemsSource="{StaticResource SampleStudentSubjects}"
+                          ItemsSource="{Binding SubjectGrades}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="20"/>
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Text="{Binding SubjectName}"/>
+
+                            <ItemsControl ItemsSource="{Binding Grades}"
+                                          Grid.Row="1">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="{Binding Timestamp}"
+                                                       Margin="8, 0"/>
+                                            <TextBlock Text="{Binding Grade}"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                            
+                        </Grid>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
     </Grid>
 </Window>
