@@ -35,14 +35,14 @@ public class GradesStore : IGradesStore
         }
 
         // calcuate grades
-        foreach (var student in studentsStore.Students)
-        {
-            double averageGradeValue = Grades
-                .Where(x => x.StudentId.Equals(student.Id))
-                .Average(x => (int)x.Grade);
+        //foreach (var student in studentsStore.Students)
+        //{
+        //    double averageGradeValue = Grades
+        //        .Where(x => x.StudentId.Equals(student.Id))
+        //        .Average(x => (int)x.Grade);
 
-            student.Grade = GetAverageGrade(averageGradeValue);
-        }
+        //    // student.Grade = GetAverageGrade(averageGradeValue);
+        //}
     }
 
     public List<StudentSubjectGrade> Grades { get; private set; }

@@ -24,9 +24,9 @@ public class StudentsController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<StudentDto>>> GetAll()
     {
-        await Task.Delay(500);
+        var students = await _studentsStore.GetStudentsAsync(CancellationToken.None); // TODO: add token
 
-        return _studentsStore.Students
+        return students
             .Select(DtoMapper.StudentToDto)
             .ToList();
     }
@@ -34,9 +34,9 @@ public class StudentsController : ControllerBase
     [HttpGet("{idCard}")]
     public async Task<ActionResult<StudentDto>> GetStudent(string idCard)
     {
-        await Task.Delay(500);
+        var students = await _studentsStore.GetStudentsAsync(CancellationToken.None);
 
-        return _studentsStore.Students
+        return students
             .FirstOrDefault(x => x.IdCard.Equals(idCard))
             ?.ToDto();
     }
@@ -44,50 +44,28 @@ public class StudentsController : ControllerBase
     [HttpDelete("{idCard}")]
     public async Task<ActionResult<StudentDto>> DeleteStudent(string idCard)
     {
-        await Task.Delay(500);
-
-        var student = _studentsStore.Students
-            .FirstOrDefault(x => x.IdCard.Equals(idCard));
-
-        if (student is null)
-        {
-            return NotFound("Entity with specified id not found");
-        }
-
-        _studentsStore.Students.Remove(student);
-        return student.ToDto();
+        var removedStudent = await _studentsStore.RemoveStudentAsync(student => student.IdCard.Equals(idCard), CancellationToken.None);
+        return removedStudent?.ToDto();
     }
 
     [HttpPost]
     public async Task<ActionResult<StudentDto>> CreateStudent(StudentCreateDto newStudent)
     {
-        await Task.Delay(500);
-
-        if (_studentsStore.Students.Any(x => x.IdCard.Equals(newStudent.IdCard)))
+        var createdStudent = await _studentsStore.AddStudentAsync(new Student()
         {
-            return Conflict($"Student with id card {newStudent.IdCard} already exists");
-        }
-
-        // autoincrement
-        var lastId = _studentsStore.Students.Max(x => x.Id);
-        var newStudentId = lastId + 1;
-
-        return _studentsStore.AddStudent(new Student()
-        {
-            Id = newStudentId,
             IdCard = newStudent.IdCard,
             Name = newStudent.Name,
-        }).ToDto();
+        }, CancellationToken.None);
+
+        return createdStudent?.ToDto();
     }
 
     [HttpPut("{idCard}")]
     public async Task<ActionResult<StudentDto>> UpdateStudent(string idCard, 
         [FromBody]StudentUpdateDto studentToUpdate)
     {
-        await Task.Delay(500);
-
-        var student = _studentsStore.Students
-            .FirstOrDefault(x => x.IdCard.Equals(idCard));
+        var student = await _studentsStore
+            .GetStudentAsync(x => x.IdCard.Equals(idCard), CancellationToken.None);
 
         if (student is null)
         {
@@ -95,6 +73,7 @@ public class StudentsController : ControllerBase
         }
 
         student.Name = studentToUpdate.Name;
+        await _studentsStore.SaveChangesAsync(CancellationToken.None);
 
         return student.ToDto();
     }
@@ -104,29 +83,30 @@ public class StudentsController : ControllerBase
     {
         await Task.Delay(500);
 
-        var student = _studentsStore.Students
-            .FirstOrDefault(x => x.IdCard.Equals(idCard));
+        //var student = _studentsStore.Students
+        //    .FirstOrDefault(x => x.IdCard.Equals(idCard));
 
-        if (student is null)
-        {
-            return NotFound("Entity with specified id not found");
-        }
+        //if (student is null)
+        //{
+        //    return NotFound("Entity with specified id not found");
+        //}
 
-        var subjectGrades = _gradesStore.Grades
-            .Where(x => x.StudentId.Equals(student.Id))
-            .Select(x => new SubjectGradeDto()
-            {
-                Subject = x.Subject.ToDto(),
-                Grade = x.ToDto()
-            })
-            .ToList();
+        //var subjectGrades = _gradesStore.Grades
+        //    .Where(x => x.StudentId.Equals(student.Id))
+        //    .Select(x => new SubjectGradeDto()
+        //    {
+        //        Subject = x.Subject.ToDto(),
+        //        Grade = x.ToDto()
+        //    })
+        //    .ToList();
 
-        return Ok(new StudentGradesDto()
-        {
-            Student = student.ToDto(),
-            Grades = subjectGrades
-        });
+        //return Ok(new StudentGradesDto()
+        //{
+        //    Student = student.ToDto(),
+        //    Grades = subjectGrades
+        //});
 
+        return Ok(new StudentGradesDto());
     }
 
     [HttpPost("{idCard}/grades")]
@@ -135,41 +115,43 @@ public class StudentsController : ControllerBase
     {
         await Task.Delay(500);
 
-        var student = _studentsStore.Students
-            .FirstOrDefault(x => x.IdCard.Equals(idCard));
+        //var student = _studentsStore.Students
+        //    .FirstOrDefault(x => x.IdCard.Equals(idCard));
 
-        if (student is null)
-        {
-            return NotFound("Entity with specified id not found");
-        }
+        //if (student is null)
+        //{
+        //    return NotFound("Entity with specified id not found");
+        //}
 
-        var subject = _subjectsStore.Subjects
-            .FirstOrDefault(x => x.Id.Equals(grade.SubjectId));
+        //var subject = _subjectsStore.Subjects
+        //    .FirstOrDefault(x => x.Id.Equals(grade.SubjectId));
 
-        if (subject is null)
-        {
-            return NotFound("Entity with specified id not found");
-        }
+        //if (subject is null)
+        //{
+        //    return NotFound("Entity with specified id not found");
+        //}
 
-        // autoincrement
-        var lastId = _gradesStore.Grades.Max(x => x.Id);
-        var newGradeId = lastId + 1;
+        //// autoincrement
+        //var lastId = _gradesStore.Grades.Max(x => x.Id);
+        //var newGradeId = lastId + 1;
 
-        var resultGrade = _gradesStore.AddGrade(new StudentSubjectGrade()
-        {
-            Id = newGradeId,
-            StudentId = student.Id,
-            SubjectId = subject.Id,
-            Timestamp = DateTime.Now,
-            Grade = grade.Grade,
-        });
+        //var resultGrade = _gradesStore.AddGrade(new StudentSubjectGrade()
+        //{
+        //    Id = newGradeId,
+        //    StudentId = student.Id,
+        //    SubjectId = subject.Id,
+        //    Timestamp = DateTime.Now,
+        //    Grade = grade.Grade,
+        //});
 
-        return Ok(new
-        {
-            Student = student.ToDto(),
-            Subject = subject.ToDto(),
-            Grade = resultGrade.ToDto()
-        });
+        //return Ok(new
+        //{
+        //    Student = student.ToDto(),
+        //    Subject = subject.ToDto(),
+        //    Grade = resultGrade.ToDto()
+        //});
+
+        return Ok(new Object());
     }
 
     [HttpPut("{idCard}/subjects/{subjectId}")]
@@ -177,44 +159,46 @@ public class StudentsController : ControllerBase
     {
         await Task.Delay(500);
 
-        var student = _studentsStore.Students
-            .FirstOrDefault(x => x.IdCard.Equals(idCard));
+        //var student = _studentsStore.Students
+        //    .FirstOrDefault(x => x.IdCard.Equals(idCard));
 
-        if (student is null)
-        {
-            return NotFound("Entity with specified id not found");
-        }
-        var subject = _subjectsStore.Subjects
-            .FirstOrDefault(x => x.Id.Equals(subjectId));
+        //if (student is null)
+        //{
+        //    return NotFound("Entity with specified id not found");
+        //}
+        //var subject = _subjectsStore.Subjects
+        //    .FirstOrDefault(x => x.Id.Equals(subjectId));
 
-        if (subject is null)
-        {
-            return NotFound("Entity with specified id not found");
-        }
+        //if (subject is null)
+        //{
+        //    return NotFound("Entity with specified id not found");
+        //}
 
-        var studentSubject = _subjectsStore.StudentSubjects
-            .FirstOrDefault(x =>
-                x.StudentId.Equals(student.Id) &&
-                x.SubjectId.Equals(subject.Id));
+        //var studentSubject = _subjectsStore.StudentSubjects
+        //    .FirstOrDefault(x =>
+        //        x.StudentId.Equals(student.Id) &&
+        //        x.SubjectId.Equals(subject.Id));
 
-        if (studentSubject is null)
-        {
-            // autoincrement
-            var lastId = _subjectsStore.StudentSubjects.Max(x => x.Id);
-            var newId = lastId + 1;
+        //if (studentSubject is null)
+        //{
+        //    // autoincrement
+        //    var lastId = _subjectsStore.StudentSubjects.Max(x => x.Id);
+        //    var newId = lastId + 1;
 
-            studentSubject = _subjectsStore.AddStudentSubject(new()
-            {
-                Id = newId,
-                StudentId = student.Id,
-                SubjectId = subject.Id
-            });
-        }
+        //    studentSubject = _subjectsStore.AddStudentSubject(new()
+        //    {
+        //        Id = newId,
+        //        StudentId = student.Id,
+        //        SubjectId = subject.Id
+        //    });
+        //}
 
-        return Ok(new
-        {
-            Student = student.ToDto(),
-            Subject = subject.ToDto()
-        });
+        //return Ok(new
+        //{
+        //    Student = student.ToDto(),
+        //    Subject = subject.ToDto()
+        //});
+
+        return Ok(new Object());
     }
 }

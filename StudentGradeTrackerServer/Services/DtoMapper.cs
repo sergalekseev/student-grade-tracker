@@ -13,7 +13,7 @@ public static class DtoMapper
         {
             IdCard = student.IdCard,
             Name = student.Name,
-            Grade = student.Grade,
+            //Grade = student.Grade,
         };
     }
 

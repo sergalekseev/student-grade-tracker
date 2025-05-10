@@ -19,24 +19,24 @@ public class SubjectsStore : ISubjectsStore
         int lastStudentSubjectId = 1;
         int maxSubjectId = Subjects.Max(i => i.Id);
 
-        foreach (var student in studentsStore.Students)
-        {
-            var initialSubjectId = Math.Min(student.Id, maxSubjectId);
+        //foreach (var student in studentsStore.Students)
+        //{
+        //    var initialSubjectId = Math.Min(student.Id, maxSubjectId);
 
-            for (var i = initialSubjectId; i <= maxSubjectId; i++)
-            {
-                StudentSubjects.Add(new()
-                {
-                    Id = lastStudentSubjectId++,
-                    StudentId = student.Id,
-                    SubjectId = i,
+        //    for (var i = initialSubjectId; i <= maxSubjectId; i++)
+        //    {
+        //        StudentSubjects.Add(new()
+        //        {
+        //            Id = lastStudentSubjectId++,
+        //            StudentId = student.Id,
+        //            SubjectId = i,
 
-                    // refs
-                    Student = student,
-                    Subject = Subjects.First(s => s.Id.Equals(i))
-                });
-            }
-        }
+        //            // refs
+        //            Student = student,
+        //            Subject = Subjects.First(s => s.Id.Equals(i))
+        //        });
+        //    }
+        //}
     }
 
     public List<Subject> Subjects { get; private set; }

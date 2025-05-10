@@ -9,9 +9,12 @@ namespace StudentGradeTrackerServer
             var builder = WebApplication.CreateBuilder(args);
 
             // Configure Services
-            builder.Services.AddSingleton<IStudentsStore, StudentsStore>();
-            builder.Services.AddSingleton<ISubjectsStore, SubjectsStore>();
-            builder.Services.AddSingleton<IGradesStore, GradesStore>();
+            //builder.Services.AddSingleton<IStudentsStore, StudentsStore>();
+            builder.Services.AddScoped<IStudentsStore, DbStudentsStore>();
+            //builder.Services.AddSingleton<ISubjectsStore, SubjectsStore>();
+            builder.Services.AddScoped<ISubjectsStore, SubjectsStore>(); // TODO: add implementation with dbContext
+            //builder.Services.AddSingleton<IGradesStore, GradesStore>();
+            builder.Services.AddScoped<IGradesStore, GradesStore>();  // TODO: add implementation with dbContext
 
             // Add services to the container.
             builder.Services.AddControllers();
@@ -21,6 +24,9 @@ namespace StudentGradeTrackerServer
             {
                 // configure if needed
             });
+
+            // database
+            builder.Services.AddDbContext<StudentsTrackerDbContext>();
 
             var app = builder.Build();
 
