@@ -20,7 +20,9 @@ public class StudentsTrackerDbContext : DbContext
     {
         base.OnConfiguring(optionsBuilder);
 
-        optionsBuilder.UseSqlite("Data Source=stracker.db");
+        optionsBuilder
+            .UseSqlite("Data Source=stracker.db");
+            //.LogTo(Console.WriteLine, LogLevel.Information);
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

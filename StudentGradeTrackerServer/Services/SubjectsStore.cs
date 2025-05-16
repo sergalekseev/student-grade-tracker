@@ -1,4 +1,5 @@
 ﻿using StudentGradeTrackerServer.Models;
+using System.Linq.Expressions;
 
 namespace StudentGradeTrackerServer.Services;
 
@@ -19,51 +20,84 @@ public class SubjectsStore : ISubjectsStore
         int lastStudentSubjectId = 1;
         int maxSubjectId = Subjects.Max(i => i.Id);
 
-        //foreach (var student in studentsStore.Students)
-        //{
-        //    var initialSubjectId = Math.Min(student.Id, maxSubjectId);
+        // blocking operation to initialize store
+        var students = studentsStore.GetListAsync(CancellationToken.None).Result;
 
-        //    for (var i = initialSubjectId; i <= maxSubjectId; i++)
-        //    {
-        //        StudentSubjects.Add(new()
-        //        {
-        //            Id = lastStudentSubjectId++,
-        //            StudentId = student.Id,
-        //            SubjectId = i,
+        foreach (var student in students)
+        {
+            var initialSubjectId = Math.Min(student.Id, maxSubjectId);
 
-        //            // refs
-        //            Student = student,
-        //            Subject = Subjects.First(s => s.Id.Equals(i))
-        //        });
-        //    }
-        //}
+            for (var i = initialSubjectId; i <= maxSubjectId; i++)
+            {
+                var subject = Subjects.First(s => s.Id.Equals(i));
+                var studentSubject = new StudentSubject()
+                {
+                    Id = lastStudentSubjectId++,
+                    StudentId = student.Id,
+                    SubjectId = i,
+
+                    // refs
+                    Student = student,
+                    Subject = subject
+                };
+
+                StudentSubjects.Add(studentSubject);
+
+                //refs
+                subject.Students.Add(studentSubject);
+                student.Subjects.Add(studentSubject);
+            }
+        }
     }
 
-    public List<Subject> Subjects { get; private set; }
+    private List<Subject> Subjects { get; set; }
 
-    public List<StudentSubject> StudentSubjects { get; private set; }
+    private List<StudentSubject> StudentSubjects { get; set; }
 
-    public StudentSubject AddStudentSubject(StudentSubject newStudentSubject)
+    public Task<StudentSubject> AddStudentSubjectAsync(StudentSubject newStudentSubject, CancellationToken cancellationToken)
     {
         StudentSubjects.Add(newStudentSubject);
-        return newStudentSubject;
+        return Task.FromResult(newStudentSubject);
     }
 
-    public Subject AddSubject(Subject newSubject)
-    {
-        Subjects.Add(newSubject);
-        return newSubject;
-    }
-
-    public StudentSubject RemoveStudentSubject(StudentSubject studentSubjectToRemove)
+    public Task<StudentSubject> RemoveStudentSubjectAsync(StudentSubject studentSubjectToRemove, CancellationToken cancellationToken)
     {
         StudentSubjects.Remove(studentSubjectToRemove);
-        return studentSubjectToRemove;
+        return Task.FromResult(studentSubjectToRemove);
     }
 
-    public Subject RemoveSubject(Subject subjectToRemove)
+    public Task<Subject> AddAsync(Subject newEntity, CancellationToken cancellationToken)
     {
-        Subjects.Remove(subjectToRemove);
-        return subjectToRemove;
+        newEntity.Id = Subjects.Max(x => x.Id) + 1;
+        Subjects.Add(newEntity);
+
+        return Task.FromResult(newEntity);
     }
+
+    public Task<Subject?> GetAsync(Expression<Func<Subject, bool>> predicate, CancellationToken cancellationToken)
+    {
+        var subject = Subjects.FirstOrDefault(predicate.Compile());
+        return Task.FromResult(subject);
+    }
+
+    public Task<IReadOnlyList<Subject>> GetListAsync(CancellationToken cancellationToken)
+        => Task.FromResult<IReadOnlyList<Subject>>(Subjects.AsReadOnly());
+
+    public Task<IReadOnlyList<Subject>> GetListAsync(Expression<Func<Subject, bool>> predicate, CancellationToken cancellationToken)
+        => Task.FromResult<IReadOnlyList<Subject>>(Subjects.Where(predicate.Compile()).ToList().AsReadOnly());
+
+    public Task<Subject> RemoveAsync(Expression<Func<Subject, bool>> predicate, CancellationToken cancellationToken)
+    {
+        var subject = Subjects.FirstOrDefault(predicate.Compile());
+
+        if (subject is null)
+        {
+            throw new NullReferenceException(nameof(subject));
+        }
+
+        Subjects.Remove(subject);
+        return Task.FromResult(subject);
+    }
+
+    public Task SaveChangesAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 }

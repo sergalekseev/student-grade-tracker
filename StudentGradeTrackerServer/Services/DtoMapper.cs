@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using StudentGradeTracker.Infra.DataContracts;
+﻿using StudentGradeTracker.Infra.DataContracts;
 using StudentGradeTrackerServer.Models;
 
 namespace StudentGradeTrackerServer.Services;
@@ -7,46 +6,45 @@ namespace StudentGradeTrackerServer.Services;
 public static class DtoMapper
 {
 
-    public static StudentDto StudentToDto(Student student)
+    public static StudentDto StudentToDto(Student student) => new()
     {
-        return new StudentDto()
-        {
-            IdCard = student.IdCard,
-            Name = student.Name,
-            //Grade = student.Grade,
-        };
+        IdCard = student.IdCard,
+        Name = student.Name,
+    };
+
+    public static StudentDto ToDto(this Student student) => StudentToDto(student);
+
+    public static async Task<StudentDto> ToDtoAsync(this Task<Student> studentTask)
+    {
+        var student = await studentTask;
+        return student.ToDto();
     }
 
-    public static StudentDto ToDto(this Student student)
+    public static SubjectDto SubjectToDto(Subject subject) => new()
+    { 
+        Name = subject.Name,
+        Description = subject.Description
+    };
+
+    public static SubjectDto ToDto(this Subject subject) => SubjectToDto(subject);
+
+    public static async Task<SubjectDto> ToDtoAsync(this Task<Subject> subjectTask)
     {
-        return StudentToDto(student);
+        var subject = await subjectTask;
+        return subject.ToDto();
     }
 
-    public static SubjectDto SubjectToDto(Subject subject)
+    public static GradeDto GradeToDto(StudentSubjectGrade grade) => new()
     {
-        return new SubjectDto()
-        {
-            Name = subject.Name,
-            Description = subject.Description
-        };
-    }
+        Timestamp = grade.Timestamp,
+        Grade = grade.Grade
+    };
 
-    public static SubjectDto ToDto(this Subject subject)
-    {
-        return SubjectToDto(subject);
-    }
+    public static GradeDto ToDto(this StudentSubjectGrade grade) => GradeToDto(grade);
 
-    public static GradeDto GradeToDto(StudentSubjectGrade grade)
+    public static async Task<GradeDto> ToDtoAsync(this Task<StudentSubjectGrade> gradeTask)
     {
-        return new GradeDto()
-        {
-            Timestamp = grade.Timestamp,
-            Grade = grade.Grade
-        };
-    }
-
-    public static GradeDto ToDto(this StudentSubjectGrade grade)
-    {
-        return GradeToDto(grade);
+        var grade = await gradeTask;
+        return grade.ToDto();
     }
 }

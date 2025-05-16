@@ -2,12 +2,8 @@
 
 namespace StudentGradeTrackerServer.Services;
 
-public interface ISubjectsStore
+public interface ISubjectsStore : IDataStore<Subject>
 {
-    public List<Subject> Subjects { get; }
-    public List<StudentSubject> StudentSubjects { get; }
-    public Subject AddSubject(Subject newSubject);
-    public Subject RemoveSubject(Subject subjectToRemove);
-    public StudentSubject AddStudentSubject(StudentSubject newStudentSubject);
-    public StudentSubject RemoveStudentSubject(StudentSubject studentSubjectToRemove);
+    public Task<StudentSubject> AddStudentSubjectAsync(StudentSubject newStudentSubject, CancellationToken cancellationToken);
+    public Task<StudentSubject> RemoveStudentSubjectAsync(StudentSubject studentSubjectToRemove, CancellationToken cancellationToken);
 }

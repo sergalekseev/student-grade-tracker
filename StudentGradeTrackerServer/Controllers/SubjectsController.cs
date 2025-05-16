@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using StudentGradeTracker.Infra.DataContracts;
+using StudentGradeTrackerServer.Models;
 using StudentGradeTrackerServer.Services;
 
 namespace StudentGradeTrackerServer.Controllers
@@ -17,31 +18,33 @@ namespace StudentGradeTrackerServer.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<SubjectDto>>> GetAll()
+        public async Task<ActionResult<IEnumerable<SubjectDto>>> GetAll(CancellationToken cancellationToken)
         {
-            await Task.Delay(500);
+            var subjects = await _subjectsStore.GetListAsync(cancellationToken);
 
-            return _subjectsStore.Subjects
+            return subjects
                 .Select(DtoMapper.SubjectToDto)
                 .ToList();
         }
 
         [HttpPost]
         public async Task<ActionResult<SubjectDto>> CreateSubject(
-            [FromBody]SubjectDto newSubject)
+            [FromBody]SubjectDto newSubject, CancellationToken cancellationToken)
         {
-            await Task.Delay(500);
-
-            // autoincrement
-            var lastId = _subjectsStore.Subjects.Max(x => x.Id);
-            var newSubjectId = lastId + 1;
-
-            return _subjectsStore.AddSubject(new Models.Subject()
+            try
             {
-                Id = newSubjectId,
-                Name = newSubject.Name,
-                Description = newSubject.Description,
-            }).ToDto();
+                var createdStudent = await _subjectsStore.AddAsync(new Subject()
+                {
+                    Name = newSubject.Name,
+                    Description = newSubject.Description,
+                }, cancellationToken);
+
+                return createdStudent.ToDto();
+            }
+            catch (Exception ex) when (ex is DbUpdateException or InvalidDataException)
+            {
+                return UnprocessableEntity(newSubject);
+            }
         }
     }
 }
