@@ -13,6 +13,8 @@ public interface IDataStore<TEntity> where TEntity : class
     /// <exception cref="DbUpdateException" />
     /// <exception cref="InvalidDataException" />
     public Task<TEntity> AddAsync(TEntity newEntity, CancellationToken cancellationToken);
+
+    /// <exception cref="NullReferenceException" />
     public Task<TEntity> RemoveAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken);
 }
 
