@@ -6,7 +6,7 @@ namespace StudentGradeTrackerServer.Services;
 
 public class GradesStore : IGradesStore
 {
-    public GradesStore(IStudentsStore studentsStore)
+    public GradesStore(IStudentsStore studentsStore, ISubjectsStore subjectsStore)
     {
         Grades = new();
         var rand = new Random();
