@@ -1,7 +1,5 @@
-﻿using Microsoft.AspNetCore.SignalR;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using StudentGradeTrackerServer.Models;
-using System;
 using System.Linq.Expressions;
 
 namespace StudentGradeTrackerServer.Services;
@@ -61,9 +59,19 @@ public class SubjectsDbStore : ISubjectsStore
         return subject;
     }
 
-    public Task<StudentSubject> RemoveStudentSubjectAsync(StudentSubject studentSubjectToRemove, CancellationToken cancellationToken)
+    public async Task<StudentSubject> RemoveStudentSubjectAsync(Expression<Func<StudentSubject, bool>> predicate, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var studentSubject = await _dbContext.StudentSubjects.FirstOrDefaultAsync(predicate);
+
+        if (studentSubject is null)
+        {
+            throw new NullReferenceException(nameof(studentSubject));
+        }
+
+        _dbContext.StudentSubjects.Remove(studentSubject);
+        await _dbContext.SaveChangesAsync(cancellationToken);
+
+        return studentSubject;
     }
 
     public Task SaveChangesAsync(CancellationToken cancellationToken) =>

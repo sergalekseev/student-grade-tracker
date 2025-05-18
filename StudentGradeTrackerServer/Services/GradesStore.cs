@@ -84,4 +84,8 @@ public class GradesStore : IGradesStore
         Grades.Remove(grade);
         return Task.FromResult(grade);
     }
+
+
+    public Task<List<StudentSubjectGrade>> GetGradesWithSubjectAsync(Expression<Func<StudentSubjectGrade, bool>> predicate, CancellationToken cancellationToken)
+        => Task.FromResult(Grades.Where(predicate.Compile()).ToList());
 }

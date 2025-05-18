@@ -60,10 +60,17 @@ public class SubjectsStore : ISubjectsStore
         return Task.FromResult(newStudentSubject);
     }
 
-    public Task<StudentSubject> RemoveStudentSubjectAsync(StudentSubject studentSubjectToRemove, CancellationToken cancellationToken)
+    public Task<StudentSubject> RemoveStudentSubjectAsync(Expression<Func<StudentSubject, bool>> predicate, CancellationToken cancellationToken)
     {
-        StudentSubjects.Remove(studentSubjectToRemove);
-        return Task.FromResult(studentSubjectToRemove);
+        var studentSubject = StudentSubjects.FirstOrDefault(predicate.Compile());
+
+        if (studentSubject is null)
+        {
+            throw new NullReferenceException(nameof(studentSubject));
+        }
+
+        StudentSubjects.Remove(studentSubject);
+        return Task.FromResult(studentSubject);
     }
 
     public Task<Subject> AddAsync(Subject newEntity, CancellationToken cancellationToken)

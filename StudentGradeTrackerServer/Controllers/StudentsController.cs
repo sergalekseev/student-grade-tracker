@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using StudentGradeTracker.Infra.DataContracts;
 using StudentGradeTrackerServer.Models;
 using StudentGradeTrackerServer.Services;
-using System.Threading;
 
 namespace StudentGradeTrackerServer.Controllers;
 
@@ -135,7 +134,7 @@ public class StudentsController : ControllerBase
         }
 
         var subjectGrades = await _gradesStore
-            .GetListAsync(x => x.StudentId.Equals(student.Id), cancellationToken);
+            .GetGradesWithSubjectAsync(x => x.StudentId.Equals(student.Id), cancellationToken);
 
 
         return Ok(new StudentGradesDto()
@@ -151,47 +150,35 @@ public class StudentsController : ControllerBase
 
     [HttpPost("{idCard}/grades")]
     public async Task<ActionResult> CreateGrade(string idCard,
-        [FromBody]GradeCreateDto grade)
+        [FromBody]GradeCreateDto grade, CancellationToken cancellationToken)
     {
-        await Task.Delay(500);
+        var student = await _studentsStore.GetAsync(x => x.IdCard.Equals(idCard), cancellationToken);
 
-        //var student = _studentsStore.Students
-        //    .FirstOrDefault(x => x.IdCard.Equals(idCard));
+        if (student is null)
+        {
+            return NotFound(student);
+        }
 
-        //if (student is null)
-        //{
-        //    return NotFound("Entity with specified id not found");
-        //}
+        var subject = await _subjectsStore.GetAsync(x => x.Id.Equals(grade.SubjectId), cancellationToken);
 
-        //var subject = _subjectsStore.Subjects
-        //    .FirstOrDefault(x => x.Id.Equals(grade.SubjectId));
+        if (subject is null)
+        {
+            return NotFound(subject);
+        }
 
-        //if (subject is null)
-        //{
-        //    return NotFound("Entity with specified id not found");
-        //}
+        var resultGrade = await _gradesStore.AddAsync(new StudentSubjectGrade()
+        {
+            StudentId = student.Id,
+            SubjectId = subject.Id,
+            Timestamp = grade.Timestamp,
+            Grade = grade.Grade,
+        }, cancellationToken);
 
-        //// autoincrement
-        //var lastId = _gradesStore.Grades.Max(x => x.Id);
-        //var newGradeId = lastId + 1;
-
-        //var resultGrade = _gradesStore.AddGrade(new StudentSubjectGrade()
-        //{
-        //    Id = newGradeId,
-        //    StudentId = student.Id,
-        //    SubjectId = subject.Id,
-        //    Timestamp = DateTime.Now,
-        //    Grade = grade.Grade,
-        //});
-
-        //return Ok(new
-        //{
-        //    Student = student.ToDto(),
-        //    Subject = subject.ToDto(),
-        //    Grade = resultGrade.ToDto()
-        //});
-
-        return Ok(new Object());
+        return Ok(new SubjectGradeDto()
+        {
+            Subject = subject.ToDto(),
+            Grade = resultGrade.ToDto()
+        });
     }
 
     [HttpPut("{idCard}/subjects/{subjectId}")]
