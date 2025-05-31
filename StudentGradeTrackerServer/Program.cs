@@ -27,6 +27,9 @@ namespace StudentGradeTrackerServer
                 // configure if needed
             });
 
+            // signalr
+            builder.Services.AddSignalR();
+
             // database
             builder.Services.AddDbContext<StudentsTrackerDbContext>();
 
@@ -42,6 +45,7 @@ namespace StudentGradeTrackerServer
             // Configure the HTTP request pipeline.
             app.UseAuthorization();
             app.MapControllers();
+            app.MapHub<NotificationHub>("/notifications");
 
             app.Run();
         }

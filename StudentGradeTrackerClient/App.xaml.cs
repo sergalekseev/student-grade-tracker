@@ -13,16 +13,20 @@ namespace StudentGradeTracker
     /// </summary>
     public partial class App : Application
     {
+        private readonly NotificationsConnection _notificationsConnection;
+
         public static IHost? AppHost { get; private set; }
 
         public App()
         {
             var builder = Host.CreateDefaultBuilder();
+            _notificationsConnection = new();
 
             builder.ConfigureServices((hostContext, services) =>
             {
                 // services
                 services.AddSingleton<IServerApi, ServerApi>();
+                services.AddSingleton(_notificationsConnection);
 
                 // view models
                 services.AddTransient<MainWindowViewModel>();
@@ -50,11 +54,29 @@ namespace StudentGradeTracker
                 Console.WriteLine(ex.Message);
             }
 
+            try
+            {
+                await _notificationsConnection.InitializeAsync(CancellationToken.None);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+
             base.OnStartup(e);
         }
 
         protected override async void OnExit(ExitEventArgs e)
         {
+            try
+            {
+                await _notificationsConnection.StopAsync(CancellationToken.None);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+
             try
             {
                 if (AppHost != null)

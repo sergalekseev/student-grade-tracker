@@ -10,10 +10,13 @@ namespace StudentGradeTracker.ViewModels
         private StudentCreateDto _newStudent;
         private ObservableCollection<StudentDto> _students;
         private readonly IServerApi _serverApi;
+        private readonly NotificationsConnection _notificationsConnection;
 
-        public MainWindowViewModel(IServerApi serverApi)
+        public MainWindowViewModel(IServerApi serverApi, 
+            NotificationsConnection notificationsConnection)
         {
             _serverApi = serverApi;
+            _notificationsConnection = notificationsConnection;
             _newStudent = new();
 
             AddStudent = new RelayCommand<StudentDto>(OnAddStudent);
@@ -45,8 +48,23 @@ namespace StudentGradeTracker.ViewModels
         {
             await base.OnAppearing();
 
+            _notificationsConnection.NewStudentUpdateReceived -= OnNewStudentUpdateReceived;
+            _notificationsConnection.NewStudentUpdateReceived += OnNewStudentUpdateReceived;
+
             var students = await _serverApi.GetStudentsAsync();
             Students = [.. students];
+        }
+
+        public override Task OnDisappearing()
+        {
+            _notificationsConnection.NewStudentUpdateReceived -= OnNewStudentUpdateReceived;
+
+            return base.OnDisappearing();
+        }
+
+        private void OnNewStudentUpdateReceived(object? sender, StudentDto newStudent)
+        {
+            Students.Add(newStudent);
         }
 
         private async void OnAddStudent(StudentDto _)
@@ -57,6 +75,8 @@ namespace StudentGradeTracker.ViewModels
 
                 if (newStudent is not null)
                 {
+                    await _notificationsConnection.SendNewStudentUpdateAsync(
+                        NewStudent, CancellationToken.None);
                     Students.Add(newStudent);
                 }
             }
