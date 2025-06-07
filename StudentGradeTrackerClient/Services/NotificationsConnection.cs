@@ -3,7 +3,7 @@ using StudentGradeTracker.Infra.DataContracts;
 
 namespace StudentGradeTracker.Services;
 
-public class NotificationsConnection
+public class NotificationsConnection : INotificationConnection
 {
     public event EventHandler<StudentDto> NewStudentUpdateReceived;
 
@@ -23,8 +23,12 @@ public class NotificationsConnection
         if (_isInitialized) return;
 
         _connection.On<StudentDto>(
-            NotificationHubMethods.Connection.ReceiveNewStudentUpdate,
-            OnNewStudentUpdateReceived);
+            nameof(ReceiveNewStudentUpdate),
+            ReceiveNewStudentUpdate);
+
+        _connection.On<IncomingMessage>(
+            nameof(ReceiveMessage),
+            ReceiveMessage);
 
         await _connection.StartAsync(cancellationToken);
 
@@ -33,7 +37,8 @@ public class NotificationsConnection
 
     public async Task StopAsync(CancellationToken cancellationToken)
     {
-        _connection.Remove(NotificationHubMethods.Connection.ReceiveNewStudentUpdate);
+        _connection.Remove(nameof(ReceiveNewStudentUpdate));
+        _connection.Remove(nameof(ReceiveMessage));
 
         await _connection.StopAsync(cancellationToken);
 
@@ -44,13 +49,24 @@ public class NotificationsConnection
         CancellationToken cancellationToken)
     {
         return _connection.SendAsync(
-            NotificationHubMethods.Hub.NotifyNewStudent,
+            NotificationHubMethods.NotifyNewStudent,
             newStudent,
             cancellationToken);
     }
 
-    private void OnNewStudentUpdateReceived(StudentDto newStudent)
+    public Task ReceiveNewStudentUpdate(StudentDto newStudent)
     {
         NewStudentUpdateReceived?.Invoke(this, newStudent);
+        return Task.CompletedTask;
+    }
+
+    public Task ReceiveMessage(Message message)
+    {
+        return message.Name switch
+        {
+            NotificationHubMessages.NewStudentUpdate =>
+                ReceiveNewStudentUpdate(message.Payload as StudentDto),
+            _ => Task.CompletedTask
+        };
     }
 }

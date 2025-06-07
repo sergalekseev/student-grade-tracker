@@ -2,6 +2,7 @@
 using StudentGradeTracker.Services;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
+using System.Windows.Threading;
 
 namespace StudentGradeTracker.ViewModels
 {
@@ -64,7 +65,7 @@ namespace StudentGradeTracker.ViewModels
 
         private void OnNewStudentUpdateReceived(object? sender, StudentDto newStudent)
         {
-            Students.Add(newStudent);
+            App.Current.Dispatcher.Invoke(() => Students.Add(newStudent));
         }
 
         private async void OnAddStudent(StudentDto _)
@@ -73,12 +74,12 @@ namespace StudentGradeTracker.ViewModels
             {
                 var newStudent = await _serverApi.CreateStudentAsync(NewStudent);
 
-                if (newStudent is not null)
-                {
-                    await _notificationsConnection.SendNewStudentUpdateAsync(
-                        NewStudent, CancellationToken.None);
-                    Students.Add(newStudent);
-                }
+                //if (newStudent is not null)
+                //{
+                //    await _notificationsConnection.SendNewStudentUpdateAsync(
+                //        NewStudent, CancellationToken.None);
+                //    //Students.Add(newStudent);
+                //}
             }
             catch { }
             finally

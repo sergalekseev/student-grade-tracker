@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using StudentGradeTracker.Infra.DataContracts;
 using StudentGradeTrackerServer.Models;
@@ -13,13 +14,16 @@ public class StudentsController : ControllerBase
     private readonly IStudentsStore _studentsStore;
     private readonly IGradesStore _gradesStore;
     private readonly ISubjectsStore _subjectsStore;
+    private readonly IHubContext<NotificationHub, INotificationConnection> _notificationHub;
 
     public StudentsController(IStudentsStore studentsStore,
-        IGradesStore gradesStore, ISubjectsStore subjectsStore)
+        IGradesStore gradesStore, ISubjectsStore subjectsStore,
+        IHubContext<NotificationHub, INotificationConnection> notificationHub)
     {
         _studentsStore = studentsStore;
         _gradesStore = gradesStore;
         _subjectsStore = subjectsStore;
+        _notificationHub = notificationHub;
     }
 
     [HttpGet]
@@ -72,7 +76,18 @@ public class StudentsController : ControllerBase
                 Name = newStudent.Name,
             }, cancellationToken);
 
-            return createdStudent.ToDto();
+            var result = createdStudent.ToDto();
+
+            // notify all clients
+            await _notificationHub.Clients.All
+                .ReceiveMessage(new Message()
+                {
+                    Name = NotificationHubMessages.NewStudentUpdate,
+                    Payload = result
+                });
+                //.ReceiveNewStudentUpdate(result);
+
+            return result;
         }
         catch (Exception ex) when (ex is DbUpdateException or InvalidDataException)
         {

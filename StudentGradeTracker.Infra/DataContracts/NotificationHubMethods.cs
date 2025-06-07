@@ -1,14 +1,46 @@
-﻿namespace StudentGradeTracker.Infra.DataContracts;
+﻿using System.Text.Json;
+using System.Text.Json.Serialization;
+
+namespace StudentGradeTracker.Infra.DataContracts;
 
 public class NotificationHubMethods
 {
-    public class Hub
-    {
-        public const string NotifyNewStudent = "NotifyNewStudent";
-    }
+    public const string NotifyNewStudent = "NotifyNewStudent";
+}
 
-    public class Connection
+public class NotificationHubMessages
+{
+    public const string NewStudentUpdate = "NewStudentUpdate";
+}
+
+// { "name": "" }
+
+public class Message
+{
+    [JsonPropertyName("name")]
+    public string Name { get; set; }
+
+    [JsonPropertyName("payload"), 
+     JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public virtual object Payload { get; set; }
+}
+
+public class IncomingMessage : Message, IJsonOnDeserialized
+{
+    [JsonIgnore]
+    public override object Payload { get; set; }
+
+
+    [JsonPropertyName("payload")]
+    public JsonElement RawPayload { get; set; }
+
+    public void OnDeserialized()
     {
-        public const string ReceiveNewStudentUpdate = "ReceiveNewStudentUpdate";
+        Payload = Name switch
+        {
+            NotificationHubMessages.NewStudentUpdate =>
+                JsonSerializer.Deserialize<StudentDto>(RawPayload.GetRawText()),
+            _ => null
+        };
     }
 }

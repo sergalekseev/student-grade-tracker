@@ -54,14 +54,19 @@ namespace StudentGradeTracker
                 Console.WriteLine(ex.Message);
             }
 
-            try
+            await Task.Run(async () =>
             {
-                await _notificationsConnection.InitializeAsync(CancellationToken.None);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
+                try
+                {
+                    await _notificationsConnection.InitializeAsync(CancellationToken.None);
+
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+            });
+            
 
             base.OnStartup(e);
         }
